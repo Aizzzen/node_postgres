@@ -1,0 +1,163 @@
+PS C:\Program Files\PostgreSQL\14\bin> psql --version
+psql : Имя "psql" не распознано как имя командлета, функции, файла сценария или выполняемой про
+граммы. Проверьте правильность написания имени, а также наличие и правильность пути, после чего
+ повторите попытку.
+строка:1 знак:1
++ psql --version
++ ~~~~
+    + CategoryInfo          : ObjectNotFound: (psql:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+Suggestion [3,General]: Команда psql не найдена, однако существует в текущем расположении. По умолчанию оболочка Windows PowerShell не загружает команды из текущего расположения. Если вы уверены в надежности команды, введите ".\psql". Для получения дополнительных сведений вызовите справку с помощью команды "get-help about_Command_Precedence".
+PS C:\Program Files\PostgreSQL\14\bin> .\psql --version
+psql (PostgreSQL) 14.3
+PS C:\Program Files\PostgreSQL\14\bin> .\psql -U postgres
+Пароль пользователя postgres:
+psql (14.3)
+ПРЕДУПРЕЖДЕНИЕ: Кодовая страница консоли (866) отличается от основной
+                страницы Windows (1251).
+                8-битовые (русские) символы могут отображаться некорректно.
+                Подробнее об этом смотрите документацию psql, раздел
+                "Notes for Windows users".
+Введите "help", чтобы получить справку.
+
+postgres=# \l
+                                          ╤яшёюъ срч фрээ√ї
+    ╚ь     | ┬ырфхыхЎ | ╩юфшЁютър |     LC_COLLATE      |      LC_CTYPE       |     ╧Ёртр фюёЄєяр
+-----------+----------+-----------+---------------------+---------------------+-----------------------
+ postgres  | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 |
+ template0 | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+           |          |           |                     |                     | postgres=CTc/postgres
+ template1 | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+           |          |           |                     |                     | postgres=CTc/postgres
+(3 ёЄЁюъш)
+
+
+postgres=# create database node_postgres;
+CREATE DATABASE
+postgres=# \l
+                                            ╤яшёюъ срч фрээ√ї
+      ╚ь       | ┬ырфхыхЎ | ╩юфшЁютър |     LC_COLLATE      |      LC_CTYPE       |     ╧Ёртр фюёЄєяр
+---------------+----------+-----------+---------------------+---------------------+-----------------------
+ node_postgres | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 |
+ postgres      | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 |
+ template0     | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+               |          |           |                     |                     | postgres=CTc/postgres
+ template1     | postgres | UTF8      | Russian_Russia.1251 | Russian_Russia.1251 | =c/postgres          +
+               |          |           |                     |                     | postgres=CTc/postgres
+(4 ёЄЁюъш)
+
+
+postgres=# \connect node_postgres
+Вы подключены к базе данных "node_postgres" как пользователь "postgres".
+node_postgres=# \dt
+Отношения не найдены.
+node_postgres=# create TABLE person(
+node_postgres(#     id SERIAL PRIMARY KEY,
+node_postgres(#     name VARCHAR(255),
+node_postgres(#     surname VARCHAR(255)
+node_postgres(# );
+CREATE TABLE
+node_postgres=# \dt
+           ╤яшёюъ юЄэю°хэшщ
+ ╤їхьр  |  ╚ь    |   ╥шя   | ┬ырфхыхЎ
+--------+--------+---------+----------
+ public | person | ЄрсышЎр | postgres
+(1 ёЄЁюър)
+
+
+node_postgres=# .\psql \! chcp 1251
+неверная команда \psql
+Введите \? для получения справки.
+node_postgres-# psql \! chcp 1251
+Текущая кодовая страница: 1251
+node_postgres-# \dt
+           Список отношений
+ Схема  |  Имя   |   Тип   | Владелец
+--------+--------+---------+----------
+ public | person | таблица | postgres
+(1 строка)
+
+
+node_postgres-# select * from person
+node_postgres-# select * from person;
+ОШИБКА:  ошибка синтаксиса (примерное положение: ".")
+СТРОКА 1: .
+          ^
+node_postgres=# select * from person
+node_postgres-#
+node_postgres-# select * from person;
+ОШИБКА:  ошибка синтаксиса (примерное положение: "select")
+СТРОКА 2: select * from person;
+          ^
+node_postgres=# select * from person;
+ id | name | surname
+----+------+---------
+(0 строк)
+
+
+node_postgres=# create TABLE post(
+node_postgres(#     id SERIAL PRIMARY KEY,
+node_postgres(#     title VARCHAR(255),
+node_postgres(#     content VARCHAR(255),
+node_postgres(#     user_id INTEGER,
+node_postgres(#     FOREIGN KEY (user_id) REFERENCES person (id)
+node_postgres(# );
+CREATE TABLE
+node_postgres=# \dt
+           Список отношений
+ Схема  |  Имя   |   Тип   | Владелец
+--------+--------+---------+----------
+ public | person | таблица | postgres
+ public | post   | таблица | postgres
+(2 строки)
+
+
+node_postgres=# select * from post;
+ id | title | content | user_id
+----+-------+---------+---------
+(0 строк)
+
+
+node_postgres=# select * from person;
+ id |  name   |  surname
+----+---------+-----------
+  1 | Yunus   | Gadamurov
+  2 | Yunus   | Gadamurov
+  3 | NoYunus | Gadamurov
+(3 строки)
+
+
+node_postgres=# select * from person;
+ id |  name   |  surname
+----+---------+-----------
+  1 | Yunus   | Gadamurov
+  3 | NoYunus | Gadamurov
+  2 | Ilon    | Mask
+(3 строки)
+
+
+node_postgres=# select * from person;
+ id | name  |  surname
+----+-------+-----------
+  1 | Yunus | Gadamurov
+  2 | Ilon  | Mask
+(2 строки)
+
+
+node_postgres=# select * from post;
+ id | title | content | user_id
+----+-------+---------+---------
+(0 строк)
+
+
+node_postgres=# select * from post;
+ id | title  |    content    | user_id
+----+--------+---------------+---------
+  1 | Text 1 | Description 1 |       1
+  2 | Text 2 | Description 2 |       2
+(2 строки)
+
+
+node_postgres=#
